@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IGR Template</title>
+  <style>
+    html,body {
+	  background-color: #f3f3f3;
+	  font-family: Arial, Helvetica, sans-serif;
+      margin: 0px;
+	  padding: 0px;
+	  border: 0px;
+    }
+    .box {
+      background-color: #f3f3f3;
+      width: 1024px;
+      height: 670px;
+      position: relative;
+      top: 0;
+      left: 0;
+	  display: block;
+    }
+    .hotswap-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+	
+    .hotswap-area.video-active {
+    }
+
+    .hotswap-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hotswap-area video {
+	  position:absolute;
+	  top: 110px;
+	  right: 60px;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    .content {
+      position: relative;
+	  position: absolute;
+      left: 0px;
+      top: 50px;
+      background-color: transparent;
+      padding: 40px 0 0 40px;
+      font-weight: normal;
+      font-size: 19px;
+      line-height: 22px;
+    }
+
+    .content ul {
+      list-style: none;
+	  list-style-type: none;
+      padding: 0;
+    }
+
+	.content li {
+	  background-image: url('../interface/blt1_icw_grey.png'); 
+	  background-repeat: no-repeat;
+	  background-position: left top !important;
+	  background-size: 20px 20px;
+	  padding-left: 22px;
+	  margin-bottom: 20px;
+    }
+	
+    a {
+      text-decoration: underline;
+      color: black;
+      cursor: pointer;
+    }
+	
+    .clicked {
+      color: #cccccc;
+    }	
+
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div id="hotswap-area" class="hotswap-area">
+      <img src="images\FR280X-28G1.png" alt="Default Content">
+    </div>
+    <div class="content">
+      <p>Lorem ipsum dolor sit amet, consectetur <br>adipiscing elit. Sed non risus. Suspendisse <br>lectus tortor, dignissim sit amet, <br>adipiscing nec, ultricies sed, dolor.</p>
+      <ul>
+        <li><a href="#" class="media-link" data-type="image" data-src="images\FR280X-28G2.png">Dummy Image 2</a></li>
+        <li><a href="#" class="media-link" data-type="video" data-src="images\FR280X-28G3.mp4" data-width="400" data-height="300">Dummy Video 1</a></li>
+        <li><a href="#" class="media-link" data-type="image" data-src="images\FR280X-28G4.png">Dummy Image 3</a></li>
+        <li><a href="#" class="media-link" data-type="image" data-src="images\FR280X-28G6.png">Dummy Image 4</a></li>
+        <li><a href="#" class="media-link" data-type="image" data-src="images\FR280X-28G7.png">Dummy Image 5</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const hotswapArea = document.getElementById('hotswap-area');
+    const mediaLinks = document.querySelectorAll('.media-link');
+
+    function setupVideo(video) {
+      video.addEventListener('click', () => {
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+
+      video.addEventListener('play', () => {
+        video.style.borderColor = 'transparent';
+      });
+
+      video.addEventListener('pause', () => {
+        if (!video.ended) {
+          video.style.borderColor = 'aqua';
+        }
+      });
+
+      video.addEventListener('ended', () => {
+        video.style.borderColor = 'yellow';
+		hotswapArea.classList.remove('video-active');
+      });
+    }
+
+    mediaLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+		link.classList.add('clicked');
+        const type = link.dataset.type;
+        const src = link.dataset.src;
+
+        hotswapArea.innerHTML = '';
+
+        if (type === 'image') {
+		  hotswapArea.classList.remove('video-active');
+          const img = document.createElement('img');
+          img.src = src;
+          hotswapArea.appendChild(img);
+        } else if (type === 'video') {
+		  hotswapArea.classList.add('video-active');
+          const video = document.createElement('video');
+          const source = document.createElement('source');
+          const width = link.dataset.width || '400'; // Default width if not provided
+          const height = link.dataset.height || '300'; // Default height if not provided
+
+          video.width = width;
+          video.height = height;
+          source.src = src;
+          source.type = 'video/mp4';
+          video.appendChild(source);
+          video.style.borderColor = 'aqua';
+          hotswapArea.appendChild(video);
+          setupVideo(video);
+        }
+      });
+    });
+
+    // Setup for initial video if it exists
+    const initialVideo = hotswapArea.querySelector('video');
+    if (initialVideo) {
+        initialVideo.style.borderColor = 'aqua';
+        setupVideo(initialVideo);
+    }
+
+  </script>
+</body>
+</html>
